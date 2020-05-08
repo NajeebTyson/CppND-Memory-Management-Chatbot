@@ -48,7 +48,7 @@ ChatBot::~ChatBot()
 ChatBot::ChatBot(const ChatBot &other) {
     std::cout << "ChatBot Copy Constructor" << std::endl;
 
-    *_chatLogic = *(other._chatLogic);
+    _chatLogic = other._chatLogic;
     *_rootNode = *(other._rootNode);
     *_currentNode = *(other._currentNode);
 
