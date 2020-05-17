@@ -48,17 +48,35 @@ ChatBot::~ChatBot()
 ChatBot::ChatBot(const ChatBot &other) {
     std::cout << "ChatBot Copy Constructor" << std::endl;
 
-    _chatLogic = other._chatLogic;
-    *_rootNode = *(other._rootNode);
-    *_currentNode = *(other._currentNode);
+    if (other._image == NULL) {
+        _image = NULL;
+    } else {
+        _image = new wxBitmap(*(other._image));
+    }
 
-    *_image = *(other._image);
+    _chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+
+    _chatLogic->SetChatbotHandle(this);
+
 }
 
 ChatBot::ChatBot(ChatBot &&other) noexcept {
     std::cout << "ChatBot Move Constructor" << std::endl;
 
-    *this = std::move(other);
+    _chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+    _image = other._image;
+
+    // assigning nullptr to other's pointers
+    other._chatLogic = nullptr;
+    other._rootNode = nullptr;
+    other._currentNode = nullptr;
+    other._image = NULL;
+
+    _chatLogic->SetChatbotHandle(this);
 }
 
 ChatBot &ChatBot::operator=(ChatBot &&other)  noexcept {
@@ -66,23 +84,23 @@ ChatBot &ChatBot::operator=(ChatBot &&other)  noexcept {
     if (this == &other) {
         return *this;
     }
-    delete _image;
-    delete _currentNode;
-    delete _rootNode;
-    delete _chatLogic;
+
+    if (_image != NULL) {
+        delete _image;
+    }
 
     _chatLogic = other._chatLogic;
     _rootNode = other._rootNode;
     _currentNode = other._currentNode;
-
     _image = other._image;
 
     // assigning nullptr to other's pointers
     other._chatLogic = nullptr;
     other._rootNode = nullptr;
     other._currentNode = nullptr;
-
     other._image = NULL;
+
+    _chatLogic->SetChatbotHandle(this);
 
     return *this;
 }
@@ -92,8 +110,16 @@ ChatBot &ChatBot::operator=(const ChatBot &other) {
     if (this == &other) {
         return *this;
     }
-    ChatBot temp(other);
-    *this = std::move(temp);
+
+    if (_image != NULL) {
+        delete _image;
+    }
+    _image = new wxBitmap(*(other._image));
+    _chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+
+    _chatLogic->SetChatbotHandle(this);
     return *this;
 }
 
